@@ -33,6 +33,15 @@ jobs:
     inputs:
       versionSpec: '12.x'
 
+
+
+  - task: JavaToolInstaller@0
+    displayName: 'Use Java 11'
+    inputs:
+      versionSpec: 11
+      jdkArchitectureOption: x64
+      jdkSourceOption: PreInstalled
+
   - task: BatchScript@1
     displayName: 'setup env'
     inputs:
