@@ -13,7 +13,7 @@ class QDQMatMulTransformer : public QDQOperatorTransformer {
   QDQMatMulTransformer(Node& node, Graph& graph) : QDQOperatorTransformer(node, graph) {}
 
   bool Transform(const std::vector<const Node*>& parents, const std::vector<const Node*>& children) override {
-    if (children.size() != 1) {
+    if (children.size() != 1 || parents.size() != 2) {
       return false;
     }
 

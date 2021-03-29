@@ -48,9 +48,10 @@ def _create_missing_input_data(model_inputs, name_input_map, symbolic_dim_values
                 dims.append(dim.dim_value)
             elif dim_type == 'dim_param':
                 if dim.dim_param not in symbolic_dim_values_map:
-                    raise ValueError("Value for symbolic dim {} was not provided.".format(dim.dim_param))
-
-                dims.append(symbolic_dim_values_map[dim.dim_param])
+                    # raise ValueError("Value for symbolic dim {} was not provided.".format(dim.dim_param))
+                    dims.append(1)
+                else:
+                    dims.append(symbolic_dim_values_map[dim.dim_param])
             else:
                 # TODO: see if we need to provide a way to specify these values. could ask for the whole
                 # shape for the input name instead.
@@ -58,7 +59,7 @@ def _create_missing_input_data(model_inputs, name_input_map, symbolic_dim_values
 
         np_type = onnx.mapping.TENSOR_TYPE_TO_NP_TYPE[input.type.tensor_type.elem_type]
         # create random data. give it range -10 to 10 so if we convert to an integer type it's not all 0s and 1s
-        data = (np.random.standard_normal(dims) * 10).astype(np_type)
+        data = np.zeros(dims, dtype=np_type)  # (np.random.standard_normal(dims) * 10).astype(np_type)
 
         name_input_map[input.name] = data
 

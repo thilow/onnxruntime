@@ -16,9 +16,9 @@ def _path_match_suffix_ignore_case(path: typing.Union[pathlib.Path, str], suffix
     return path.casefold().endswith(suffix.casefold())
 
 
-def _onnx_model_path_to_ort_model_path(onnx_model_path: pathlib.Path):
+def _onnx_model_path_to_ort_model_path(onnx_model_path: pathlib.Path, optimization_level_str: str):
     assert onnx_model_path.is_file() and _path_match_suffix_ignore_case(onnx_model_path, ".onnx")
-    return onnx_model_path.with_suffix(".ort")
+    return onnx_model_path.with_suffix(".{}.ort".format(optimization_level_str))
 
 
 def _create_config_file_from_ort_models(onnx_model_path_or_dir: pathlib.Path, enable_type_reduction: bool):
@@ -52,8 +52,11 @@ def _create_session_options(optimization_level: ort.GraphOptimizationLevel,
     return so
 
 
-def _convert(model_path_or_dir: pathlib.Path, optimization_level: ort.GraphOptimizationLevel, use_nnapi: bool,
+def _convert(model_path_or_dir: pathlib.Path, optimization_level_str: str, use_nnapi: bool,
              custom_op_library: pathlib.Path, create_optimized_onnx_model: bool):
+
+    optimization_level = _get_optimization_level(optimization_level_str)
+
     models = []
     if model_path_or_dir.is_file() and _path_match_suffix_ignore_case(model_path_or_dir, ".onnx"):
         models.append(model_path_or_dir)
@@ -80,37 +83,41 @@ def _convert(model_path_or_dir: pathlib.Path, optimization_level: ort.GraphOptim
         optimizer_filter = ['NchwcTransformer']
 
     for model in models:
-        # ignore any files with an extension of .optimized.onnx which are presumably from previous executions
-        # of this script
-        if _path_match_suffix_ignore_case(model, ".optimized.onnx"):
-            print("Ignoring '{}'".format(model))
-            continue
+        try:
 
-        # create .ort file in same dir as original onnx model
-        ort_target_path = _onnx_model_path_to_ort_model_path(model)
+            # ignore any files with an extension of .optimized.onnx which are presumably from previous executions
+            # of this script
+            if _path_match_suffix_ignore_case(model, ".optimized.onnx"):
+                print("Ignoring '{}'".format(model))
+                continue
 
-        if create_optimized_onnx_model:
-            # Create an ONNX file with the same optimizations that will be used for the ORT format file.
-            # This allows the ONNX equivalent of the ORT format model to be easily viewed in Netron.
-            optimized_target_path = model.with_suffix(".optimized.onnx")
-            so = _create_session_options(optimization_level, optimized_target_path, custom_op_library)
+            # create .ort file in same dir as original onnx model
+            ort_target_path = _onnx_model_path_to_ort_model_path(model, optimization_level_str)
 
-            print("Saving optimized ONNX model {} to {}".format(model, optimized_target_path))
-            _ = ort.InferenceSession(str(model), sess_options=so, providers=providers,
+            if create_optimized_onnx_model:
+                # Create an ONNX file with the same optimizations that will be used for the ORT format file.
+                # This allows the ONNX equivalent of the ORT format model to be easily viewed in Netron.
+                optimized_target_path = model.with_suffix(".optimized.onnx")
+                so = _create_session_options(optimization_level, optimized_target_path, custom_op_library)
+
+                print("Saving optimized ONNX model {} to {}".format(model, optimized_target_path))
+                _ = ort.InferenceSession(str(model), sess_options=so, providers=providers,
+                                         disabled_optimizers=optimizer_filter)
+
+            # Load ONNX model, optimize, and save to ORT format
+            so = _create_session_options(optimization_level, ort_target_path, custom_op_library)
+            so.add_session_config_entry('session.save_model_format', 'ORT')
+
+            print("Converting optimized ONNX model to ORT format model {}".format(ort_target_path))
+            _ = ort.InferenceSession(str(model), sess_options=so, providers=providers)
                                      disabled_optimizers=optimizer_filter)
 
-        # Load ONNX model, optimize, and save to ORT format
-        so = _create_session_options(optimization_level, ort_target_path, custom_op_library)
-        so.add_session_config_entry('session.save_model_format', 'ORT')
-
-        print("Converting optimized ONNX model to ORT format model {}".format(ort_target_path))
-        _ = ort.InferenceSession(str(model), sess_options=so, providers=providers,
-                                 disabled_optimizers=optimizer_filter)
-
-        # orig_size = os.path.getsize(onnx_target_path)
-        # new_size = os.path.getsize(ort_target_path)
-        # print("Serialized {} to {}. Sizes: orig={} new={} diff={} new:old={:.4f}:1.0".format(
-        #     onnx_target_path, ort_target_path, orig_size, new_size, new_size - orig_size, new_size / orig_size))
+            # orig_size = os.path.getsize(onnx_target_path)
+            # new_size = os.path.getsize(ort_target_path)
+            # print("Serialized {} to {}. Sizes: orig={} new={} diff={} new:old={:.4f}:1.0".format(
+            #     onnx_target_path, ort_target_path, orig_size, new_size, new_size - orig_size, new_size / orig_size))
+        except Exception as e:
+            print("Error converting {}: {}".format(model, e))
 
 
 def _get_optimization_level(level):
@@ -185,8 +192,8 @@ def main():
     if custom_op_library and not custom_op_library.is_file():
         raise FileNotFoundError("Unable to find custom operator library '{}'".format(custom_op_library))
 
-    optimization_level = _get_optimization_level(args.optimization_level)
-    _convert(model_path_or_dir, optimization_level, args.use_nnapi, custom_op_library, args.save_optimized_onnx_model)
+    _convert(model_path_or_dir, args.optimization_level, args.use_nnapi, custom_op_library,
+             args.save_optimized_onnx_model)
     _create_config_file_from_ort_models(model_path_or_dir, args.enable_type_reduction)
 
 
