@@ -82,6 +82,9 @@ def _convert(model_path_or_dir: pathlib.Path, optimization_level_str: str, use_n
     if optimization_level == ort.GraphOptimizationLevel.ORT_ENABLE_ALL:
         optimizer_filter = ['NchwcTransformer']
 
+    # m1 = pathlib.Path(r'D:\tflite_models\tfhub_models\tf2\lite-model_german-mbmelgan_lite_1.tflite.onnx')
+    # models = [m1]
+
     for model in models:
         try:
 
@@ -97,7 +100,7 @@ def _convert(model_path_or_dir: pathlib.Path, optimization_level_str: str, use_n
             if create_optimized_onnx_model:
                 # Create an ONNX file with the same optimizations that will be used for the ORT format file.
                 # This allows the ONNX equivalent of the ORT format model to be easily viewed in Netron.
-                optimized_target_path = model.with_suffix(".optimized.onnx")
+                optimized_target_path = model.with_suffix(".{}.optimized.onnx".format(optimization_level_str))
                 so = _create_session_options(optimization_level, optimized_target_path, custom_op_library)
 
                 print("Saving optimized ONNX model {} to {}".format(model, optimized_target_path))
@@ -109,7 +112,7 @@ def _convert(model_path_or_dir: pathlib.Path, optimization_level_str: str, use_n
             so.add_session_config_entry('session.save_model_format', 'ORT')
 
             print("Converting optimized ONNX model to ORT format model {}".format(ort_target_path))
-            _ = ort.InferenceSession(str(model), sess_options=so, providers=providers)
+            _ = ort.InferenceSession(str(model), sess_options=so, providers=providers,
                                      disabled_optimizers=optimizer_filter)
 
             # orig_size = os.path.getsize(onnx_target_path)
@@ -192,8 +195,15 @@ def main():
     if custom_op_library and not custom_op_library.is_file():
         raise FileNotFoundError("Unable to find custom operator library '{}'".format(custom_op_library))
 
-    _convert(model_path_or_dir, args.optimization_level, args.use_nnapi, custom_op_library,
+    # _convert(model_path_or_dir, args.optimization_level, args.use_nnapi, custom_op_library,
+    #          args.save_optimized_onnx_model)
+    _convert(model_path_or_dir, 'basic', args.use_nnapi, custom_op_library,
              args.save_optimized_onnx_model)
+    _convert(model_path_or_dir, 'extended', args.use_nnapi, custom_op_library,
+             args.save_optimized_onnx_model)
+    _convert(model_path_or_dir, 'all', args.use_nnapi, custom_op_library,
+             args.save_optimized_onnx_model)
+
     _create_config_file_from_ort_models(model_path_or_dir, args.enable_type_reduction)
 
 
