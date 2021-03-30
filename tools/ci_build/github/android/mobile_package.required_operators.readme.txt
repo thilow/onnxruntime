@@ -65,11 +65,21 @@ Models from MLPerf Mobile
   - mobilenet_edgetpu_224_1.0_float.onnx
   - mobilenet_edgetpu_224_1.0-qdq.onnx
   - mobilenet_edgetpu_224_1-fromtf.onnx
-  - mobilenet_v1_1.0_224.onnx
+  - mobilenet_v1_1.0_224.opset12.onnx
   - resnet50_v1-int8.onnx
   - resnet50_v1.onnx
   - ssd_mobilenet_v2_300_float-int8.onnx
   - ssd_mobilenet_v2_300_float.onnx
   - ssd_mobilenet_v2_300-qdq.onnx
-  - ssd_mobilenet_v2-fromtf.onnx
+  
+  Excluded
+    - ssd_mobilenet_v2-fromtf.onnx  
+      - has int32 Expand at end that isn't used. excluding as we don't have int32 as a required type for Expand, and as
+        the output from the Expand isn't used it's not really required by this model. 
+
+Other
+  Mobilenet v2 from pytortch
+  - pytorch.mobilenet_v2_float.onnx
+  - pytorch.mobilenet_v2_uint8.onnx
+
 
