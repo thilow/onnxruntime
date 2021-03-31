@@ -1,10 +1,8 @@
-The required operators config file was generated from a number of models (details below), with optimizations set to both 'all' and 'basic'.
+The required operators config file was generated from a number of models (details below), with optimizations run using 'all', 'extended' and 'basic'.
 Following that, some additional operators were added, as per the comments in the config file.
 
-The global types to support were selected to support quantized models, float32 models, plus int64_t to handle any operators that work with the dimensions in a shape.
-  - NOTE: we are adding changes so that operators that require int64_t for handling a shape internally make sure that's available so we don't need to list it in the global types. 
-  - TODO: we'd need to load and execute these models without int64_t in the global type list to validate, as kernels that internally switch on type don't fail at model load (they fail inside OpKernel::Compute at runtime)
-    - we could probably hack up something using onnx_test_data_utils. if most models don't need special handling that should be viable.
+The global types to support were selected to support quantized models, float32 models
+We also have required type support for int32 and int64_t in selected operators that work with the dimensions in a shape or indices (handled internally and not affected by the global type list) 
 
 Models used as input (Converted using tf2onnx in early March 2021):
   Models from TF Lite Examples https://www.tensorflow.org/lite/examples
@@ -74,8 +72,8 @@ Models from MLPerf Mobile
   
   Excluded
     - ssd_mobilenet_v2-fromtf.onnx  
-      - has int32 Expand at end that isn't used. excluding as we don't have int32 as a required type for Expand, and as
-        the output from the Expand isn't used it's not really required by this model. 
+      - has int32 Expand which is used in a subgraph but Expand doesn't have int32/int64 as required types
+        - the tflite version of ssd mobilenet v2 does not have an int32 Expand so seems optional to support
 
 Other
   Mobilenet v2 from pytortch
@@ -83,3 +81,16 @@ Other
   - pytorch.mobilenet_v2_uint8.onnx
 
 
+====
+tf2onnx conversion
+
+$models = gci -Recurse *.tflite |% { $_.FullName }
+foreach ($model in $models) {
+>>   try {
+>>     "Converting $model: python -m tf2onnx.convert --opset 13 --tflite $model --output $model.onnx"
+>>     python -m tf2onnx.convert --opset 13 --tflite "$model" --output "$model.onnx"
+>>   }
+>>   catch {
+>>       "$model failed: $_.Exception.Message"
+>>   }
+>> }

@@ -1,0 +1,94 @@
+Package size builds for testing
+
+----
+Base config entries (add one for opset 12 and a duplicate for opset 13)
+
+!globally_allowed_types;float,int8_t,uint8_t
+
+ai.onnx;12;Add,ArgMax,AveragePool,BatchNormalization,Cast,Ceil,Clip,Concat,ConstantOfShape,Conv,ConvTranspose,DepthToSpace,DequantizeLinear,Div,DynamicQuantizeLinear,Equal,Exp,Expand,Gather,GatherND,Gemm,GlobalAveragePool,Greater,Identity,LeakyRelu,Less,Log,MatMul,MatMulInteger,Max,MaxPool,Min,Mul,Neg,NonMaxSuppression,NonZero,Not,Pad,Pow,QLinearConv,QLinearMatMul,QuantizeLinear,Range,Reciprocal,ReduceMean,ReduceSum,Relu,Reshape,Resize,Shape,Sigmoid,Size,Slice,Softmax,SpaceToDepth,Split,Sqrt,Squeeze,Sub,Tanh,Tile,TopK,Transpose,Unsqueeze
+ai.onnx;12;Abs,And,ArgMin,Cos,CumSum,Elu,Expand,Flatten,Floor,GreaterOrEqual,LessOrEqual,LogSoftmax,LRN,Mean,Or,PRelu,ReduceMax,ReduceMin,ReduceProd,ReverseSequence,Round,ScatterND,Sin,Sum,ThresholdedRelu,Unique,Where
+ai.onnx;12;If,Loop,Scan
+com.microsoft;1;DynamicQuantizeMatMul,FusedConv,FusedGemm,FusedMatMul,MatMulIntegerToFloat,NhwcMaxPool,QLinearAdd,QLinearConv,QLinearGlobalAveragePool,QLinearMul,QLinearSigmoid
+com.microsoft;1;QLinearLeakyRelu
+
+----
+Windows Debug build for usage with python
+
+3003 15:59:32 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> dev_build --build_dir ".\build\Windows\PackageOps.WithPy.int8x2.f32" --disable_ml_ops --build_shared_lib --skip_tests --minimal_build --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --build --update
+
+----
+Windows RelWithDebInfo to check sizes:
+
+3003 16:42:33 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> .\build.bat --parallel --build_shared_lib --cmake_generator="Visual Studio 16 2019" --config RelWithDebInfo --build_dir ".\build\Windows\PackageOps.int8x2.f32" --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build
+
+==================
+
+Android builds:
+
+Full build
+3103 07:39:18 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\AllOps" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --skip_submodule_sync --minimal_build extended --use_nnapi --build --update
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\AllOps\Release\CPU+NNAPI no op or type reduction
+libonnxruntime.so	so	4,791,272	---A--------	31/03/2021 9:54:25 AM
+
+Current package ops:
+
+MinSizeRel
+
+3003 16:00:37 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config MinSizeRel --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build 
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32\MinSizeRel\CPU
+libonnxruntime.so	so	1,973,152	---A--------	30/03/2021 4:10:56 PM
+
++NNAPI
+
+3003 16:12:41 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config MinSizeRel --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build extended --use_nnapi
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32\MinSizeRel\CPU+NNAPI
+libonnxruntime.so	so	2,247,584	---A--------	30/03/2021 4:19:02 PM
+
+Release
+
+3003 16:31:23 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32\Release\CPU
+libonnxruntime.so	so	2,390,944	---A--------	30/03/2021 4:40:54 PM
+
++NNAPI
+
+3003 16:20:38 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build extended --use_nnapi
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32\Release\CPU+NNAPI
+libonnxruntime.so	so	2,751,392	---A--------	30/03/2021 4:29:48 PM
+
+RelWithDebInfo
++NNAPI
+3003 16:53:16 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config RelWithDebInfo --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --minimal_build extended --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.config --enable_reduced_operator_type_support --skip_submodule_sync --use_nnapi
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32\RelWithDebInfo\libonnxruntime.so
+
+===========
+Add int32 and int64_t
+!globally_allowed_types;float,int8_t,uint8_t,int32_t,int64_t
+
+Release + NNAPI
+3003 17:08:14 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.int32.int64" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.with_int32_int64.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build extended --use_nnapi
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.int32.int64\Release\CPU+NNAPI
+libonnxruntime.so	so	2,993,056	---A--------	30/03/2021 6:58:35 PM
+
+===========
+Remove tflite converter ops that have not been seen in models
+
+3103 07:39:18 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.exclude_unseen_tflite_converter_ops" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.exclude_tflite_converter_ops.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build extended --use_nnapi --build --update  
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.exclude_unseen_tflite_converter_ops\Release\CPU+NNAPI
+libonnxruntime.so	so	2,583,456	---A--------	31/03/2021 7:37:47 AM
+
+====
+Orig config with opset 13 only
+
+3103 09:56:52 D:\src\github\ort.vs19 [skottmckay/AndroidPackageValidation]> ./build.bat --config Release --build_dir ".\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.opset13" --android --android_sdk_path D:\Android --android_ndk_path D:\Android\ndk\21.1.6352462\ --android_abi arm64-v8a --android_api 29 --cmake_generator Ninja  --disable_ml_ops --disable_exceptions --build_shared_lib --skip_tests --include_ops_by_config .\tools\ci_build\github\android\mobile_package.required_operators.opset13only.config --enable_reduced_operator_type_support --skip_submodule_sync --minimal_build extended --use_nnapi
+
+D:\src\github\ort.vs19\build\Android\arm64-v8a.c++_static\PackageOps.int8x2.f32.opset13\Release
+libonnxruntime.so	so	2,710,432	---A--------	31/03/2021 10:56:17 AM
