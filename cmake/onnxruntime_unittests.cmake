@@ -423,6 +423,10 @@ if(onnxruntime_USE_COREML)
   list(APPEND onnxruntime_test_providers_dependencies onnxruntime_providers_coreml onnxruntime_coreml_proto)
 endif()
 
+if(onnxruntime_USE_SNPE)
+  list(APPEND onnxruntime_test_providers_dependencies onnxruntime_providers_snpe)
+endif()
+
 file(GLOB_RECURSE onnxruntime_test_tvm_src CONFIGURE_DEPENDS
   "${ONNXRUNTIME_ROOT}/test/tvm/*.h"
   "${ONNXRUNTIME_ROOT}/test/tvm/*.cc"
@@ -462,6 +466,7 @@ set(ONNXRUNTIME_TEST_LIBS
     ${PROVIDERS_ARMNN}
     ${PROVIDERS_ROCM}
     ${PROVIDERS_COREML}
+    ${PROVIDERS_SNPE}
     onnxruntime_optimizer
     onnxruntime_providers
     onnxruntime_util
@@ -510,6 +515,12 @@ if(onnxruntime_USE_COREML)
   list(APPEND onnxruntime_test_providers_libs onnxruntime_providers_coreml onnxruntime_coreml_proto)
 endif()
 
+if(onnxruntime_USE_SNPE)
+  list(APPEND onnxruntime_test_framework_src_patterns  ${TEST_SRC_DIR}/providers/snpe/*)
+  list(APPEND onnxruntime_test_framework_libs onnxruntime_providers_snpe)
+  list(APPEND onnxruntime_test_providers_dependencies onnxruntime_providers_snpe)
+  list(APPEND onnxruntime_test_providers_libs onnxruntime_providers_snpe)
+endif()
 
 if(WIN32)
   if (onnxruntime_USE_TVM)

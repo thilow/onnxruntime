@@ -2426,6 +2426,24 @@ It's an extension of Gelu. It takes the sum of input A and bias input B as the i
         }
       });
 
+  ONNX_CONTRIB_OPERATOR_SCHEMA(PerceptionCoreNode)
+      .SetDomain(kMSDomain)
+      .SinceVersion(1)
+      .SetDoc("Onnx node for PerceptionCore.")
+      .Attr("output_shape", "output shape.", AttributeProto::INTS)
+      .Attr("payload", "payload of the SNPE DLC file.", AttributeProto::STRING)
+      .AllowUncheckedAttributes()
+      .Input(0, "input1", "The input data1 as Tensor.", "T")
+      .Input(1, "input2", "The input data2 as Tensor.", "T", OpSchema::Optional)
+      .Output(0, "output1", "The output1.", "T")
+      .Output(1, "output2", "The output2.", "T", OpSchema::Optional)
+      .TypeConstraint(
+          "T",
+          {"tensor(uint8)", "tensor(float16)", "tensor(float)", "tensor(double)", "tensor(bfloat16)"},
+          "Constrain input and output types to float tensors.")
+      .TypeAndShapeInferenceFunction([](ONNX_NAMESPACE::InferenceContext& ctx) {
+      });
+
   // Register the NCHWc schemas if supported by the platform.
   if (MlasNchwcGetBlockSize() > 1) {
     RegisterNchwcSchemas();
