@@ -37,7 +37,7 @@ jobs:
           onnxruntimecpubuild \
             /opt/python/cp37-cp37m/bin/python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
               --build_dir /build \
-              --config ${BUILD_CONFIG} \
+              --config ${{parameters.buildConfig}} \
               /onnxruntime_src/tools/ci_build/github/android/default_mobile_aar_build_settings.json
       workingDirectory: $(Build.SourcesDirectory)
 
