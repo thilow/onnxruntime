@@ -31,7 +31,6 @@ jobs:
         docker run --rm \
           --volume $(Build.SourcesDirectory):/onnxruntime_src \
           --volume $(Build.BinariesDirectory):/build \
-          --volume $(test_data_directory):/home/onnxruntimedev/.test_data \
           -e NIGHTLY_BUILD \
           -e BUILD_BUILDNUMBER \
           -e BUILD_CONFIG=${{parameters.buildConfig}}
