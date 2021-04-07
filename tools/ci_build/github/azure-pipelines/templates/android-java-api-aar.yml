@@ -1,0 +1,49 @@
+parameters:
+- name: buildConfig
+  displayName: Configuration to build
+  type: string
+  default: 'Release'
+
+jobs:
+- job: Android_Java_API_AAR_Packaging_Pipeline
+  timeoutInMinutes: 120
+  workspace:
+    clean: all
+  pool: Linux-CPU-2019
+
+  steps:
+  - checkout: self
+    clean: true
+    submodules: recursive
+
+  - template: set-version-number-variables-step.yml
+  - template: templates/get-docker-image-steps.yml
+    parameters:
+      Dockerfile: tools/ci_build/github/linux/docker/Dockerfile.manylinux2014_cpu
+      Context: tools/ci_build/github/linux/docker
+      DockerBuildArgs: "--build-arg BUILD_UID=$( id -u )"
+      Repository: onnxruntimecpubuild
+
+  - task: CmdLine@2
+    displayName: Build Android AAR Packages
+    inputs:
+      script: |
+        docker run --rm \
+          --volume $(Build.SourcesDirectory):/onnxruntime_src \
+          --volume $(Build.BinariesDirectory):/build \
+          --volume $(test_data_directory):/home/onnxruntimedev/.test_data \
+          -e NIGHTLY_BUILD \
+          -e BUILD_BUILDNUMBER \
+          -e BUILD_CONFIG=${{parameters.buildConfig}}
+          onnxruntimecpubuild \
+            /opt/python/cp37-cp37m/bin/python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
+              --build_dir /build \
+              --config BUILD_CONFIG \
+              /onnxruntime_src/tools/ci_build/github/android/default_mobile_aar_build_settings.json
+      workingDirectory: $(Build.SourcesDirectory)
+
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(Build.BinariesDirectory)/aar_out'
+      artifactName: 'drop-aar_out'
