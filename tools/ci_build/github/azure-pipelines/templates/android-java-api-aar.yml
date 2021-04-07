@@ -37,12 +37,7 @@ jobs:
           -e BUILD_BUILDNUMBER \
           -e BUILD_CONFIG=${{parameters.buildConfig}} \
           onnxruntimecpubuild \
-            /opt/python/cp37-cp37m/bin/python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
-              --build_dir /build \
-              --config ${{parameters.buildConfig}} \
-              --android_sdk_path /android_home \
-              --android_ndk_path /ndk_home \
-              /onnxruntime_src/tools/ci_build/github/android/default_mobile_aar_build_settings.json
+            /bin/bash /onnxruntime_src/tools/ci_build/github/android/build_aar_and_copy_artifacts.sh
       workingDirectory: $(Build.SourcesDirectory)
 
 
