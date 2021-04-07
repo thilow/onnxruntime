@@ -31,6 +31,8 @@ jobs:
         docker run --rm \
           --volume $(Build.SourcesDirectory):/onnxruntime_src \
           --volume $(Build.BinariesDirectory):/build \
+          --volume $ANDROID_HOME:/android_home \
+          --volume $NDK_HOME:/ndk_home \
           -e NIGHTLY_BUILD \
           -e BUILD_BUILDNUMBER \
           -e BUILD_CONFIG=${{parameters.buildConfig}} \
@@ -38,6 +40,8 @@ jobs:
             /opt/python/cp37-cp37m/bin/python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
               --build_dir /build \
               --config ${{parameters.buildConfig}} \
+              --android_sdk_path /android_home \
+              --android_ndk_path /ndk_home \
               /onnxruntime_src/tools/ci_build/github/android/default_mobile_aar_build_settings.json
       workingDirectory: $(Build.SourcesDirectory)
 
