@@ -4,11 +4,6 @@ parameters:
   type: string
   default: 'Release'
 
-- name: packageName
-  displayName: Package Name
-  type: string
-  default: 'onnxruntime-mobile'
-
 jobs:
 - job: Android_Java_API_AAR_Packaging_Pipeline
   timeoutInMinutes: 120
@@ -54,14 +49,12 @@ jobs:
           -e NIGHTLY_BUILD \
           -e BUILD_BUILDNUMBER \
           -e BUILD_CONFIG=${{parameters.buildConfig}} \
-          -e PACKAGE_NAME=${{parameters.packageName}} \
           -e ORT_VERSION=$(OnnxRuntimeVersion) \
           onnxruntimecpubuild \
             /bin/bash /onnxruntime_src/tools/ci_build/github/android/build_aar_and_copy_artifacts.sh
       workingDirectory: $(Build.SourcesDirectory)
 
-
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(artifacts_directory)'
-      artifactName: '${{parameters.packageName}}'
+      artifactName: 'onnxruntime-android-aar'
