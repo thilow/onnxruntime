@@ -11,10 +11,21 @@ jobs:
     clean: all
   pool: Linux-CPU-2019
 
+  variables:
+    artifacts_directory: $(Build.BinariesDirectory)/.artifacts
+
   steps:
   - checkout: self
     clean: true
     submodules: recursive
+
+  - task: CmdLine@2
+    displayName: Create artifacts directory
+    inputs:
+      script: |
+        # Create a folder for artifacts
+        mkdir -p $(artifacts_directory)
+      workingDirectory: $(Build.BinariesDirectory)
 
   - template: set-version-number-variables-step.yml
   - template: get-docker-image-steps.yml
@@ -34,9 +45,11 @@ jobs:
           --volume $(Build.BinariesDirectory):/build \
           --volume $ANDROID_HOME:/android_home \
           --volume $NDK_HOME:/ndk_home \
+          --volume $(artifacts_directory):/home/onnxruntimedev/.artifacts \
           -e NIGHTLY_BUILD \
           -e BUILD_BUILDNUMBER \
-          -e BUILD_CONFIG=${{parameters.buildConfig}} \
+          -e BUILD_CONFIG=$(parameters.buildConfig) \
+          -e ORT_VERSION=$(OnnxRuntimeVersion) \
           onnxruntimecpubuild \
             /bin/bash /onnxruntime_src/tools/ci_build/github/android/build_aar_and_copy_artifacts.sh
       workingDirectory: $(Build.SourcesDirectory)
@@ -44,5 +57,5 @@ jobs:
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: '$(Build.BinariesDirectory)/aar_out'
+      pathtoPublish: '$(artifacts_directory)'
       artifactName: 'drop-aar_out'
