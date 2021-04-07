@@ -28,6 +28,7 @@ jobs:
     displayName: Build Android AAR Packages
     inputs:
       script: |
+        NDK_HOME=$(realpath $ANDROID_NDK_HOME)
         docker run --rm \
           --volume $(Build.SourcesDirectory):/onnxruntime_src \
           --volume $(Build.BinariesDirectory):/build \

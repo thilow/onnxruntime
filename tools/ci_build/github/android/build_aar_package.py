@@ -83,7 +83,7 @@ def _build_aar(args):
     _aar_dir = os.path.join(_intermediates_dir, 'aar', _build_config)
     _jnilibs_dir = os.path.join(_intermediates_dir, 'jnilibs', _build_config)
     _base_build_command = [
-        'python3', BUILD_PY, '--config=' + _build_config
+        sys.executable, BUILD_PY, '--config=' + _build_config
     ] + build_settings['build_params']
 
     # Build binary for each ABI, one by one
