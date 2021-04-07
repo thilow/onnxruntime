@@ -33,7 +33,7 @@ jobs:
           --volume $(Build.BinariesDirectory):/build \
           -e NIGHTLY_BUILD \
           -e BUILD_BUILDNUMBER \
-          -e BUILD_CONFIG=${{parameters.buildConfig}}
+          -e BUILD_CONFIG=${{parameters.buildConfig}} \
           onnxruntimecpubuild \
             /opt/python/cp37-cp37m/bin/python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
               --build_dir /build \
