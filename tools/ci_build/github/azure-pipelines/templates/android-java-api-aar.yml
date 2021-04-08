@@ -36,6 +36,13 @@ jobs:
       Repository: onnxruntimecpubuild
 
   - task: CmdLine@2
+    displayName: Install jdk11 in the docker image, which is required for Android build
+    inputs:
+      script: |
+        docker exec -u root onnxruntimecpubuild \
+          yum install -y java-11-openjdk-devel
+
+  - task: CmdLine@2
     displayName: Build Android AAR Packages
     inputs:
       script: |
