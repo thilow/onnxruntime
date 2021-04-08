@@ -7,6 +7,9 @@ set -e
 set -x
 export PATH=/opt/python/cp37-cp37m/bin:$PATH
 
+# install jdk11
+yum install -y java-11-openjdk-devel
+
 # build the AAR package
 python3 /onnxruntime_src/tools/ci_build/github/android/build_aar_package.py \
     --build_dir /build \

@@ -35,13 +35,6 @@ jobs:
       DockerBuildArgs: "--build-arg BUILD_UID=$( id -u )"
       Repository: onnxruntimecpubuild
 
-  - task: JavaToolInstaller@0
-    displayName: Use jdk 11
-    inputs:
-      versionSpec: '11'
-      jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'PreInstalled'
-
   - task: CmdLine@2
     displayName: Build Android AAR Packages
     inputs:
