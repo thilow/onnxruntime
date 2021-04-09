@@ -134,6 +134,8 @@
 namespace onnxruntime {
 namespace concurrency {
 
+bool USE_STICKY_WORKER_ASSIGNMENT = false;
+
 static std::unique_ptr<char[]> GetEnv(const char* var) {
   char* val = nullptr;
 #if _MSC_VER
@@ -666,8 +668,6 @@ class ThreadPoolTempl : public onnxruntime::concurrency::ExtendedThreadPoolInter
 
     uint32_t v_ = 0;
   };
-
-  bool USE_STICKY_WORKER_ASSIGNMENT = false;
 
   typedef std::function<void()> Task;
   typedef RunQueue<Task, Tag, 1024> Queue;
