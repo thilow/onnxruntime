@@ -134,7 +134,7 @@
 namespace onnxruntime {
 namespace concurrency {
 
-bool USE_STICKY_WORKER_ASSIGNMENT = false;
+static bool USE_STICKY_WORKER_ASSIGNMENT = false;
 
 static std::unique_ptr<char[]> GetEnv(const char* var) {
   char* val = nullptr;
