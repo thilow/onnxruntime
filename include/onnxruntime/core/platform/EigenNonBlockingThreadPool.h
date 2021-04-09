@@ -13,7 +13,7 @@
 #include <iostream>
 #include <sstream>
 
-//#define EXTRA_DEBUG
+#define EXTRA_DEBUG
 
 #pragma once
 #include "onnxruntime_config.h"
@@ -1070,7 +1070,9 @@ void SummonWorkers(PerThread &pt,
       bool enqueued;
       enqueued = q.PushBackWithTag(
           [&ps, idx, worker_fn]() {
-            ((PerThread*)ps.submitter_pt)->preferred_workers[idx] = GetPerThread()->thread_id;
+            if (USE_STICKY_WORKER_ASSIGNMENT) {
+              ((PerThread*)ps.submitter_pt)->preferred_workers[idx] = GetPerThread()->thread_id;
+            }
 #ifdef EXTRA_DEBUG
             if (idx == my_last_idx) {
               idx_as_last++;
