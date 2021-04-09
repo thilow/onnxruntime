@@ -19,8 +19,11 @@ from util import is_windows  # noqa: E402
 
 # We by default will build all 4 ABIs
 DEFAULT_BUILD_ABIS = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
-# Android API 21 is the lowest API version we support
-DEFAULT_ANDROID_MIN_SDK_VER = 21
+
+# Android API levle 24 is the lowest API version officially supported, based on Microsoft 1CS
+# It is possible to build from source using API level 21 and higher as the minimal SDK version
+DEFAULT_ANDROID_MIN_SDK_VER = 24
+
 # Android API 28 is the default target API version for Android builds
 DEFAULT_ANDROID_TARGET_SDK_VER = 28
 
