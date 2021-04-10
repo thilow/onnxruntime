@@ -41,6 +41,7 @@ module.exports = {
     '@typescript-eslint/no-require-imports': 'error',
     '@typescript-eslint/no-unnecessary-type-assertion': 'error',
     '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-unused-vars': ["error", { "argsIgnorePattern": "^_" }],
     '@typescript-eslint/promise-function-async': 'off',
     '@typescript-eslint/quotes': ['error', 'single'],
     '@typescript-eslint/restrict-plus-operands': 'error',
@@ -107,7 +108,7 @@ module.exports = {
       'jsdoc/newline-after-description': 'error',
     }
   }, {
-    files: ['node/script/**/*.ts', 'node/test/**/*.ts'], rules: {
+    files: ['node/script/**/*.ts', 'node/test/**/*.ts', 'web/script/**/*.ts', 'web/test/**/*.ts'], rules: {
       '@typescript-eslint/naming-convention': 'off',
       '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
@@ -118,6 +119,10 @@ module.exports = {
       'import/no-extraneous-dependencies': 'off',
       'import/no-unassigned-import': 'off',
       'import/no-internal-modules': 'off',
+    }
+  }, {
+    files: ['web/lib/**/*.ts'], rules: {
+      'no-underscore-dangle': 'off'
     }
   }],
   extends: [
