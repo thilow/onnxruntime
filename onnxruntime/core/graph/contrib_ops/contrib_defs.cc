@@ -2426,10 +2426,10 @@ It's an extension of Gelu. It takes the sum of input A and bias input B as the i
         }
       });
 
-  ONNX_CONTRIB_OPERATOR_SCHEMA(PerceptionCoreNode)
+  ONNX_CONTRIB_OPERATOR_SCHEMA(Snpe)
       .SetDomain(kMSDomain)
       .SinceVersion(1)
-      .SetDoc("Onnx node for PerceptionCore.")
+      .SetDoc("Onnx node for SNPE.")
       .Attr("output_shape", "output shape.", AttributeProto::INTS)
       .Attr("payload", "payload of the SNPE DLC file.", AttributeProto::STRING)
       .AllowUncheckedAttributes()

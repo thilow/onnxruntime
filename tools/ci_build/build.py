@@ -344,6 +344,10 @@ def parse_arguments():
     parser.add_argument(
         "--use_coreml", action='store_true', help="Build with CoreML support.")
     parser.add_argument(
+        "--use_snpe", action='store_true', help="Build with SNPE support.")
+    parser.add_argument(
+        "--snpe_root", help="Path to SNPE SDK root.")
+    parser.add_argument(
         "--use_nnapi", action='store_true', help="Build with NNAPI support.")
     parser.add_argument(
         "--nnapi_min_api", type=int,
@@ -630,8 +634,8 @@ def use_dev_mode(args):
     return 'ON'
 
 
-def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home, rocm_home,
-                        mpi_home, nccl_home, tensorrt_home, migraphx_home, acl_home, acl_libs, armnn_home, armnn_libs,
+def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home, rocm_home, mpi_home,
+                        nccl_home, tensorrt_home, migraphx_home, acl_home, acl_libs, armnn_home, armnn_libs, snpe_root,
                         path_to_protoc_exe, configs, cmake_extra_defines, args, cmake_extra_args):
     log.info("Generating CMake build tree")
     cmake_dir = os.path.join(source_dir, "cmake")
@@ -746,6 +750,9 @@ def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home
     if nccl_home and os.path.exists(nccl_home):
         cmake_args += ["-Donnxruntime_NCCL_HOME=" + nccl_home]
 
+    if snpe_root and os.path.exists(snpe_root):
+        cmake_args += ["-DSNPE_ROOT=" + snpe_root]
+
     if args.winml_root_namespace_override:
         cmake_args += ["-Donnxruntime_WINML_NAMESPACE_OVERRIDE=" +
                        args.winml_root_namespace_override]
@@ -815,6 +822,9 @@ def generate_build_tree(cmake_path, source_dir, build_dir, cuda_home, cudnn_home
         if not is_macOS():
             raise BuildError("Build CoreML EP requires macOS")
         cmake_args += ["-Donnxruntime_USE_COREML=ON"]
+
+    if args.use_snpe:
+        cmake_args += ["-Donnxruntime_USE_SNPE=ON"]
 
     if args.ios:
         if is_macOS():
@@ -1812,6 +1822,8 @@ def main():
     mpi_home = args.mpi_home
     nccl_home = args.nccl_home
 
+    snpe_root = args.snpe_root
+
     acl_home = args.acl_home
     acl_libs = args.acl_libs
 
@@ -1857,7 +1869,9 @@ def main():
                     cmake_extra_args = ['-A', 'ARM']
                 else:
                     cmake_extra_args = ['-A', 'ARM64']
-                cmake_extra_args += ['-G', args.cmake_generator]
+                if args.msvc_toolset:
+                    toolset = 'host=x64,version=' + args.msvc_toolset
+                    cmake_extra_args += ['-G', args.cmake_generator, '-T', toolset]
                 # Cannot test on host build machine for cross-compiled
                 # builds (Override any user-defined behaviour for test if any)
                 if args.test:
@@ -1885,7 +1899,7 @@ def main():
                 if args.cuda_version:
                     toolset += ',cuda=' + args.cuda_version
                 cmake_extra_args = [
-                    '-A', 'x64', '-T', toolset, '-G', args.cmake_generator
+                    '-A', 'ARM64', '-T', toolset, '-G', args.cmake_generator
                 ]
             if args.enable_windows_store:
                 cmake_extra_args.append(
@@ -1930,7 +1944,7 @@ def main():
                 args.cuda_version = ""
         generate_build_tree(
             cmake_path, source_dir, build_dir, cuda_home, cudnn_home, rocm_home, mpi_home, nccl_home,
-            tensorrt_home, migraphx_home, acl_home, acl_libs, armnn_home, armnn_libs,
+            tensorrt_home, migraphx_home, acl_home, acl_libs, armnn_home, armnn_libs, snpe_root,
             path_to_protoc_exe, configs, cmake_extra_defines, args, cmake_extra_args)
 
     if args.clean:
