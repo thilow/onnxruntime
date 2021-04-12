@@ -1494,10 +1494,9 @@ int CurrentThreadId() const EIGEN_FINAL {
           }
 
           if (!t) {
-            // No work passed to us while spinning; make a further full attempt to
-            // steal work from other threads prior to blocking.
+            // Ensure we make at least one attempt to steal before blocking
             if (num_threads_ != 1) {
-              t = Steal(StealAttemptKind::TRY_ALL);
+              t = Steal(StealAttemptKind::TRY_ONE);
 #ifdef EXTRA_DEBUG              
               if (t) {
                 tasks_stolen++;
