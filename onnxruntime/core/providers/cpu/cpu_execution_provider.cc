@@ -666,6 +666,7 @@ class ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 
 class ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, float, Relu);
 class ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, double, Relu);
 class ONNX_OPERATOR_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, Trilu);
+class ONNX_OPERATOR_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, Identity);
 
 // !!PLEASE READ BELOW!! Following that, add new entries above this comment
 
@@ -694,11 +695,11 @@ class ONNX_OPERATOR_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, Tr
 
  The process is the same for TYPED and untyped kernels - just repeat for each type when updating the typed entries.
 
- The changes below in the registrations using BuildKernelCreateInfo are essentially the same. Update existing 
+ The changes below in the registrations using BuildKernelCreateInfo are essentially the same. Update existing
  registration to use the VERSIONED_ macro, add end version, add new un-versioned entry in the section for the new
  opset.
 
- To double-check what versions an operator should have registrations for see 
+ To double-check what versions an operator should have registrations for see
  https://github.com/onnx/onnx/blob/master/docs/Operators.md
 *****/
 
@@ -1745,6 +1746,7 @@ Status RegisterOnnxOperatorKernels(KernelRegistry& kernel_registry) {
       BuildKernelCreateInfo<ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, double,
                                                                   Relu)>,
       BuildKernelCreateInfo<ONNX_OPERATOR_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, Trilu)>,
+      BuildKernelCreateInfo<ONNX_OPERATOR_KERNEL_CLASS_NAME(kCpuExecutionProvider, kOnnxDomain, 14, Identity)>,
   };
 
   for (auto& function_table_entry : function_table) {

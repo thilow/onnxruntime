@@ -44,6 +44,7 @@ class IdentityOp final : public OpKernel {
           std::copy(src, src + shape.Size(), dst);
         }
       }
+
       if (is_dropout) {
         Tensor* mask = context->Output(1, shape);
         // a 'nullptr' returned would make it an unused optional output
@@ -72,7 +73,6 @@ class IdentityOp final : public OpKernel {
       std::vector<Tensor> tensors;
       for (auto it = X->begin(), end = X->end(); it != end; ++it) {
         Tensor tmp(it->DataType(), onnxruntime::TensorShape(it->Shape()), alloc);
-        // session_state_.GetDataTransferMgr().CopyTensor(*it, tmp);
         size_t bytes = it->SizeInBytes();
         memcpy(tmp.MutableDataRaw(), it->DataRaw(), bytes);
         tensors.push_back(std::move(tmp));
