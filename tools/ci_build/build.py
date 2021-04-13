@@ -1899,7 +1899,7 @@ def main():
                 if args.cuda_version:
                     toolset += ',cuda=' + args.cuda_version
                 cmake_extra_args = [
-                    '-A', 'ARM64', '-T', toolset, '-G', args.cmake_generator
+                    '-A', 'x64', '-T', toolset, '-G', args.cmake_generator
                 ]
             if args.enable_windows_store:
                 cmake_extra_args.append(
