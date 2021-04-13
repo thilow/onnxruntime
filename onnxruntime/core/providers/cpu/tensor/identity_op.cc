@@ -31,8 +31,9 @@ ONNX_CPU_OPERATOR_VERSIONED_KERNEL(
     KernelDefBuilder().TypeConstraint("T", DataTypeImpl::AllTensorTypes()).Alias(0, 0),
     IdentityOp<false>);
 
-ONNX_CPU_OPERATOR_KERNEL(
+ONNX_CPU_OPERATOR_VERSIONED_KERNEL(
     Identity,
+    13,
     13,
     KernelDefBuilder().TypeConstraint("V", DataTypeImpl::AllTensorTypes()).Alias(0, 0),
     IdentityOp<false>);
