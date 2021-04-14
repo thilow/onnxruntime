@@ -28,7 +28,8 @@ TEST(Identity, SequenceType) {
   SeqTensors<int64_t> input;
   input.AddTensor({3, 2}, {1, 2, 3, 4, 5, 6});
   input.AddTensor({3, 3}, {1, 2, 3, 4, 5, 6, 7, 8, 9});
-  test.AddSeqInput("S", input);
+  test.AddSeqInput("X", input);
+  test.AddSeqOutput("Y", input);
   test.Run();
 }
 
