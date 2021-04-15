@@ -768,3 +768,12 @@ MlasQLinearMul(
     size_t N,
     bool IsScalarB
     );
+
+void
+MLASCALL
+MlasQLinearLookup(
+    const uint8_t* x,
+    const uint8_t* table,
+    uint8_t* y,
+    size_t n
+    );

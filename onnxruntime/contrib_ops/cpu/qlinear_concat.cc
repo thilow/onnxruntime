@@ -84,7 +84,7 @@ Status QLinearConcat::Compute(OpKernelContext* ctx) const {
 
       ORT_ENFORCE(tensor_x_scale->IsDataType<float>(), "Input scale is not float for quantized input @", tuple_start + 1);
       ORT_ENFORCE(tensor_x_zero_point->GetElementType() == tensor_y_zero_point->GetElementType(),
-                "Wrong input type encountered for zero point of quantized input @", tuple_start + 2);
+                  "Wrong input type encountered for zero point of quantized input @", tuple_start + 2);
 
       dynamic_lookup_tables[input_index].resize(256);
       if (is_signed_int8) {
@@ -127,7 +127,10 @@ Status QLinearConcat::Compute(OpKernelContext* ctx) const {
       const uint8_t* table = (fixed_lookup_tables_[input_index].size() > 0)
                                  ? fixed_lookup_tables_[input_index].data()
                                  : dynamic_lookup_tables[input_index].data();
-      QLinearLookupTableTransform(input + cur_in_offset, table, output + cur_out_offset, input_axis_pitch);
+      MlasQLinearLookup((uint8_t*)(input + cur_in_offset),
+                        table,
+                        (uint8_t*)(output + cur_out_offset),
+                        input_axis_pitch);
 
       cur_out_offset += p.output_axis_pitch;
       cur_in_offset += input_axis_pitch;
