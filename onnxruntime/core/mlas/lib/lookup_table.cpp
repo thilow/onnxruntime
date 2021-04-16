@@ -1,19 +1,6 @@
-#include "mlasi.h"
+#include "qladd.h"
 
 #if defined(MLAS_NEON64_INTRINSICS)
-
-static
-MLAS_FORCEINLINE
-uint8x16x4_t
-QLinearLoadTableU8x64(const uint8_t* table)
-{
-    uint8x16x4_t lut;
-    lut.val[0] = vld1q_u8(table);
-    lut.val[1] = vld1q_u8(table + 16);
-    lut.val[2] = vld1q_u8(table + 32);
-    lut.val[3] = vld1q_u8(table + 48);
-    return lut;
-}
 
 void
 MLASCALL
@@ -24,10 +11,10 @@ MlasQLinearLookup(
     size_t n
     )
 {
-    const uint8x16x4_t lut0 = QLinearLoadTableU8x64(table);
-    const uint8x16x4_t lut1 = QLinearLoadTableU8x64(table + 64);
-    const uint8x16x4_t lut2 = QLinearLoadTableU8x64(table + 128);
-    const uint8x16x4_t lut3 = QLinearLoadTableU8x64(table + 192);
+    const uint8x16x4_t lut0 = vld4q_u8(table);
+    const uint8x16x4_t lut1 = vld4q_u8(table + 64);
+    const uint8x16x4_t lut2 = vld4q_u8(table + 128);
+    const uint8x16x4_t lut3 = vld4q_u8(table + 192);
 
     const uint8x16_t v64 = vdupq_n_u8(64);
     const uint8x16_t v128 = vdupq_n_u8(128);
@@ -90,10 +77,14 @@ MlasQLinearLookup(
     size_t ldy
     )
 {
-    const uint8x16x4_t lut0 = QLinearLoadTableU8x64(table);
-    const uint8x16x4_t lut1 = QLinearLoadTableU8x64(table + 64);
-    const uint8x16x4_t lut2 = QLinearLoadTableU8x64(table + 128);
-    const uint8x16x4_t lut3 = QLinearLoadTableU8x64(table + 192);
+    const uint8x16x4_t lut0 = vld4q_u8(table);
+    const uint8x16x4_t lut1 = vld4q_u8(table + 64);
+    const uint8x16x4_t lut2 = vld4q_u8(table + 128);
+    const uint8x16x4_t lut3 = vld4q_u8(table + 192);
+
+    const auto v64 = vdupq_n_u8(64);
+    const auto v128 = vdupq_n_u8(128);
+    const auto v192 = vdupq_n_u8(192);
 
     for (; M > 0; M--) {
         const uint8_t* x = X;
@@ -101,11 +92,11 @@ MlasQLinearLookup(
         size_t n = N;
         for (; n >= 16; n -=16) {
             uint8x16_t vindex0 = vld1q_u8(x);
-            uint8x16_t vresult = vqtbl4q_u8(lut0, vindex0);
             x += 16;
-            vresult = vqtbx4q_u8(vresult, lut1, vsubq_u8(vindex0, vdupq_n_u8(64)));
-            vresult = vqtbx4q_u8(vresult, lut2, vsubq_u8(vindex0, vdupq_n_u8(128)));
-            vresult = vqtbx4q_u8(vresult, lut3, vsubq_u8(vindex0, vdupq_n_u8(192)));
+            uint8x16_t vresult = vqtbl4q_u8(lut0, vindex0);
+            vresult = vqtbx4q_u8(vresult, lut1, vsubq_u8(vindex0, v64));
+            vresult = vqtbx4q_u8(vresult, lut2, vsubq_u8(vindex0, v128));
+            vresult = vqtbx4q_u8(vresult, lut3, vsubq_u8(vindex0, v192));
 
             // uint8x16_t vindex2 = vsubq_u8(vindex0, v128);
             // uint8x16_t vec0 = vqtbl4q_u8(lut0, vindex0);
@@ -125,9 +116,9 @@ MlasQLinearLookup(
 
             uint8x16_t vindex0 = vld1q_u8(tail);
             uint8x16_t vresult = vqtbl4q_u8(lut0, vindex0);
-            vresult = vqtbx4q_u8(vresult, lut1, vsubq_u8(vindex0, vdupq_n_u8(64)));
-            vresult = vqtbx4q_u8(vresult, lut2, vsubq_u8(vindex0, vdupq_n_u8(128)));
-            vresult = vqtbx4q_u8(vresult, lut3, vsubq_u8(vindex0, vdupq_n_u8(192)));
+            vresult = vqtbx4q_u8(vresult, lut1, vsubq_u8(vindex0, v64));
+            vresult = vqtbx4q_u8(vresult, lut2, vsubq_u8(vindex0, v128));
+            vresult = vqtbx4q_u8(vresult, lut3, vsubq_u8(vindex0, v192));
 
             uint8x8_t u8x8 = vget_low_u8(vresult);
             if (n & 8) {
