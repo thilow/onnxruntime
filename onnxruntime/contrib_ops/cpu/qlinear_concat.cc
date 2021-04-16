@@ -121,20 +121,28 @@ Status QLinearConcat::Compute(OpKernelContext* ctx) const {
     auto input_size = prep.num_elements;
 
     uint8_t* output = static_cast<uint8_t*>(p.output_tensor->MutableDataRaw());
-    int64_t cur_in_offset = 0;
-    int64_t cur_out_offset = initial_output_offset;
-    for (size_t idx_copy = 0, end = input_size / input_axis_pitch; idx_copy < end; ++idx_copy) {
-      const uint8_t* table = (fixed_lookup_tables_[input_index].size() > 0)
-                                 ? fixed_lookup_tables_[input_index].data()
-                                 : dynamic_lookup_tables[input_index].data();
-      MlasQLinearLookup((uint8_t*)(input + cur_in_offset),
-                        table,
-                        (uint8_t*)(output + cur_out_offset),
-                        input_axis_pitch);
+    // int64_t cur_in_offset = 0;
+    // int64_t cur_out_offset = initial_output_offset;
+    const uint8_t* table = (fixed_lookup_tables_[input_index].size() > 0)
+                               ? fixed_lookup_tables_[input_index].data()
+                               : dynamic_lookup_tables[input_index].data();
 
-      cur_out_offset += p.output_axis_pitch;
-      cur_in_offset += input_axis_pitch;
-    }
+    MlasQLinearLookup(input_size / input_axis_pitch,
+                      input_axis_pitch,
+                      input,
+                      input_axis_pitch,
+                      table,
+                      output + initial_output_offset,
+                      p.output_axis_pitch);
+    // for (size_t idx_copy = 0, end = input_size / input_axis_pitch; idx_copy < end; ++idx_copy) {
+    //   MlasQLinearLookup((uint8_t*)(input + cur_in_offset),
+    //                     table,
+    //                     (uint8_t*)(output + cur_out_offset),
+    //                     input_axis_pitch);
+
+    //   cur_out_offset += p.output_axis_pitch;
+    //   cur_in_offset += input_axis_pitch;
+    // }
 
     initial_output_offset += input_axis_pitch;
   }

@@ -777,3 +777,16 @@ MlasQLinearLookup(
     uint8_t* y,
     size_t n
     );
+
+
+void
+MLASCALL
+MlasQLinearLookup(
+    size_t m,
+    size_t n,
+    const uint8_t* x,
+    size_t ldx,
+    const uint8_t* table,
+    uint8_t* y,
+    size_t ldy
+    );
