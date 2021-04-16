@@ -202,6 +202,10 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Android")
   # sometimes gradle JVM will run out of memory if we keep the daemon running
   # it is better to not keep a daemon running
   set(GRADLE_ARGS ${GRADLE_ARGS} --no-daemon)
+  # For Android build, gradle 7.0 may throw "Unable to watch the file system for changes"
+  # See, https://github.com/actions/virtual-environments/issues/3195
+  # Disable watch fs here
+  set(GRADLE_ARGS ${GRADLE_ARGS} --no-watch-fs)
 endif()
 if(onnxruntime_USE_CUDA)
   set(GRADLE_ARGS ${GRADLE_ARGS} -DUSE_CUDA=1)
