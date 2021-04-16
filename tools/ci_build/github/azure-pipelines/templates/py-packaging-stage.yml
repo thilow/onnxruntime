@@ -262,6 +262,7 @@ stages:
           script: |
             mkdir -p $HOME/.onnx
             docker run --rm \
+              --user=root \
               --privileged \
               --ipc=host \
               --network=host \
