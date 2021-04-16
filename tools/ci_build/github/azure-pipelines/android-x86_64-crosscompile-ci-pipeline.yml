@@ -12,8 +12,8 @@ jobs:
     inputs:
       versionSpec: $(pythonVersion)
 
-  - script: brew install coreutils ninja
-    displayName: Install coreutils and ninja
+  - script: /bin/bash tools/ci_build/github/android/prepare_android_ci_pipeline.sh
+    displayName: Prepare the pipeline run
 
   - script: |
       python3 tools/python/run_android_emulator.py \
