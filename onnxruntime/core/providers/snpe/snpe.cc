@@ -10,19 +10,15 @@ namespace snpe {
 template <typename T>
 KernelCreateInfo BuildKernelCreateInfo();
 
-#define REGISTER_KERNEL_TYPED(T)                                  \
-  ONNX_OPERATOR_TYPED_KERNEL_EX(                                  \
-      Snpe,                                                       \
-      kMSDomain,                                                  \
-      1,                                                          \
-      T,                                                          \
-      kSnpeExecutionProvider,                                     \
-      KernelDefBuilder()                                          \
-          .TypeConstraint("T", DataTypeImpl::GetTensorType<T>()), \
-      Snpe<T>);
+ONNX_OPERATOR_KERNEL_EX(
+    Snpe,
+    kMSDomain,
+    1,
+    kSnpeExecutionProvider,
+    KernelDefBuilder()
+        .TypeConstraint("T", DataTypeImpl::AllFixedSizeTensorTypes()),
+    Snpe);
 
-REGISTER_KERNEL_TYPED(uint8_t)
-REGISTER_KERNEL_TYPED(float)
 }  // namespace snpe
 }  // namespace contrib
 }  // namespace onnxruntime

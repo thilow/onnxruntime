@@ -12,27 +12,33 @@
 namespace onnxruntime {
 namespace contrib {
 namespace snpe {
-template <typename T>
+
 class Snpe : public OpKernel {
  public:
   explicit Snpe(const OpKernelInfo& info) : OpKernel(info) {
-    auto snpeEp = static_cast<const SNPEExecutionProvider*>(info.GetExecutionProvider());
-    auto payload = info.GetAttrOrDefault<std::string>("payload", "");
+    const auto snpeEp = static_cast<const SNPEExecutionProvider*>(info.GetExecutionProvider());
+    const auto payload = info.GetAttrOrDefault<std::string>("payload", "");
     output_dims_ = info.GetAttrsOrDefault<int64_t>("output1_shape");
-    bool enforeDsp = snpeEp->GetEnforceDsp();
+    const bool enforeDsp = snpeEp->GetEnforceDsp();
     snpe_rt_ = SnpeLib::SnpeLibFactory(reinterpret_cast<const unsigned char*>(payload.c_str()), payload.length(), nullptr, enforeDsp);
   }
 
   Status Compute(OpKernelContext* context) const override {
-    auto input_tensor = context->Input<Tensor>(0);
-    auto input_data = input_tensor->DataRaw();
-    size_t input_size = input_tensor->Shape().Size();
+    const Tensor* input_tensor = context->Input<Tensor>(0);
+    const auto input_data = input_tensor->DataRaw();
+    const size_t input_size = input_tensor->Shape().Size();
+    const size_t input_element_byte_size = input_tensor->DataType()->Size();
 
     TensorShape output_shape = TensorShape(output_dims_);
     auto output_tensor = context->Output(0, output_shape);
     auto output_data = output_tensor->MutableDataRaw();
+    const size_t output_element_byte_size = output_tensor->DataType()->Size();
 
-    snpe_rt_->SnpeProcess(static_cast<const unsigned char*>(input_data), input_size * sizeof(T), static_cast<unsigned char*>(output_data), output_shape.Size() * sizeof(T));
+    snpe_rt_->SnpeProcess(
+        static_cast<const unsigned char*>(input_data),
+        input_size * input_element_byte_size,
+        static_cast<unsigned char*>(output_data),
+        output_shape.Size() * output_element_byte_size);
 
     return Status::OK();
   }
@@ -40,8 +46,6 @@ class Snpe : public OpKernel {
  private:
   std::vector<int64_t> output_dims_;
   std::unique_ptr<SnpeLib> snpe_rt_;
-  //std::vector<std::string> input_names_;
-  //std::vector<std::string> output_names_;
 };
 }  // namespace snpe
 }  // namespace contrib

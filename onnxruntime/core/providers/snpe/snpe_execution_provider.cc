@@ -22,8 +22,7 @@ constexpr const char* SNPE = "SNPE";
 
 namespace contrib {
 namespace snpe {
-class ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, uint8_t, Snpe);
-class ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, float, Snpe);
+class ONNX_OPERATOR_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, Snpe);
 
 template <>
 KernelCreateInfo BuildKernelCreateInfo<void>() {
@@ -34,8 +33,7 @@ KernelCreateInfo BuildKernelCreateInfo<void>() {
 Status RegisterSnpeContribKernels(KernelRegistry& kernel_registry) {
   static const BuildKernelCreateInfoFn function_table[] = {
       BuildKernelCreateInfo<void>,  //default entry to avoid the list become empty after ops-reducing
-      BuildKernelCreateInfo<ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, uint8_t, Snpe)>,
-      BuildKernelCreateInfo<ONNX_OPERATOR_TYPED_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, float, Snpe)>,
+      BuildKernelCreateInfo<ONNX_OPERATOR_KERNEL_CLASS_NAME(kSnpeExecutionProvider, kMSDomain, 1, Snpe)>,
   };
 
   for (auto& function_table_entry : function_table) {
