@@ -16,6 +16,10 @@ struct SnpeFuncState {
   std::vector<std::string> output_names;
 };
 
+namespace contrib {
+Status RegisterSnpeContribKernels(KernelRegistry& kernel_registry);
+}  // namespace contrib
+
 class SNPEExecutionProvider : public IExecutionProvider {
  public:
   SNPEExecutionProvider(bool enforce_dsp);
@@ -24,13 +28,9 @@ class SNPEExecutionProvider : public IExecutionProvider {
   std::vector<std::unique_ptr<ComputeCapability>> GetCapability(
       const onnxruntime::GraphViewer& graph,
       const std::vector<const KernelRegistry*>& ) const override;
-
-  // we implement the Compile that takes FusedNodeAndGraph instances
-  FusionStyle GetFusionStyle() const override { return FusionStyle::FilteredGraphViewer; }
-
-  common::Status Compile(const std::vector<FusedNodeAndGraph>& fused_nodes_and_graphs,
-                         std::vector<NodeComputeInfo>& node_compute_funcs) override;
-
+    
+  std::shared_ptr<KernelRegistry> GetKernelRegistry() const override;
+  bool GetEnforceDsp() const { return enforce_dsp_; }
 
  private:
   bool enforce_dsp_;
