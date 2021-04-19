@@ -227,7 +227,8 @@ stages:
       timeoutInMinutes: 180
       workspace:
         clean: all
-      pool: AMD-GPU
+        # pool: AMD-GPU
+        pool: Onnxruntime-Linux-GPU
       strategy:
         matrix:
           Python36:
