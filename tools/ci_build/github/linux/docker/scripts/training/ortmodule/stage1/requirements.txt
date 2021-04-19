@@ -7,7 +7,7 @@ numpy==1.19.5
 transformers==v4.3.2
 torch==1.8.1
 torchtext==0.9.1
-tensorboard==v2.0.0
+tensorboard
 h5py
 wget
 pytorch-lightning==1.2.5
