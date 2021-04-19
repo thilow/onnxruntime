@@ -212,7 +212,8 @@ HIPIFY_PERL = '/opt/rocm/bin/hipify-perl'
 
 
 def hipify(src_file_path, dst_file_path):
-    log.debug('Hipifying: "{}" -> "{}"'.format(src_file_path, dst_file_path))
+    # log.debug('Hipifying: "{}" -> "{}"'.format(src_file_path, dst_file_path))
+    print('Hipifying: "{}" -> "{}"'.format(src_file_path, dst_file_path))
 
     dst_file_path = dst_file_path.replace('cuda', 'rocm')
     dir_name = os.path.dirname(dst_file_path)
@@ -295,6 +296,7 @@ def list_files(prefix, path):
 
 
 def amd_hipify(config_build_dir):
+    print('begin amd hipify')
     cuda_contrib_path = os.path.join(contrib_ops_path, 'cuda')
     rocm_contrib_path = os.path.join(config_build_dir, 'amdgpu', contrib_ops_path, 'rocm')
     contrib_files = list_files(cuda_contrib_path, '')
