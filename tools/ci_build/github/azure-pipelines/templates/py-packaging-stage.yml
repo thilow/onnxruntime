@@ -316,7 +316,7 @@ stages:
               -e BUILD_BUILDNUMBER \              
               --entrypoint /bin/bash \
               onnxruntimetrainingrocmbuild \
-                bash /onnxruntime_src/tools/doc/builddoc.sh $(PythonManylinuxDir)/bin/ /onnxruntime_src /build Release
+                /onnxruntime_src/tools/doc/builddoc.sh $(PythonManylinuxDir)/bin/ /onnxruntime_src /build Release
           workingDirectory: $(Build.SourcesDirectory)
 
       - task: CopyFiles@2
