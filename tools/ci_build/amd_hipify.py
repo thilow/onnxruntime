@@ -298,6 +298,7 @@ def list_files(prefix, path):
 def amd_hipify(config_build_dir):
     cuda_contrib_path = os.path.join(contrib_ops_path, 'cuda')
     rocm_contrib_path = os.path.join(config_build_dir, 'amdgpu', contrib_ops_path, 'rocm')
+    print('cwd: ', os.getcwd())
     print('cuda contrib path', cuda_contrib_path)
     print('rocm contrib path', rocm_contrib_path)
     contrib_files = list_files(cuda_contrib_path, '')
