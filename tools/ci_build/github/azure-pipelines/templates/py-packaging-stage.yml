@@ -313,7 +313,8 @@ stages:
               --volume $(Build.SourcesDirectory):/onnxruntime_src \
               --volume $(Build.BinariesDirectory):/build \
               -e NIGHTLY_BUILD \
-              -e BUILD_BUILDNUMBER \
+              -e BUILD_BUILDNUMBER \              
+              --entrypoint /bin/bash \
               onnxruntimetrainingrocmbuild \
                 bash /onnxruntime_src/tools/doc/builddoc.sh $(PythonManylinuxDir)/bin/ /onnxruntime_src /build Release
           workingDirectory: $(Build.SourcesDirectory)
@@ -331,15 +332,15 @@ stages:
         inputs:
           ArtifactName: onnxruntime_rocm
 
-      - script: |
-          sudo apt-get update
-          sudo apt-get install python3-pip python-dev
-        displayName: 'sudo apt-get install python3-pip python-dev'
-
-      - script: |
-          python3 -m pip install azure-storage-blob==2.1.0
-        displayName: 'python3 -m pip install azure-storage-blob==2.1.0'
-        timeoutInMinutes: 20
+#      - script: |
+#          sudo apt-get update
+#          sudo apt-get install python3-pip python-dev
+#        displayName: 'sudo apt-get install python3-pip python-dev'
+#
+#      - script: |
+#          python3 -m pip install azure-storage-blob==2.1.0
+#        displayName: 'python3 -m pip install azure-storage-blob==2.1.0'
+#        timeoutInMinutes: 20
 
 #      - task: AzureCLI@2
 #        inputs:
