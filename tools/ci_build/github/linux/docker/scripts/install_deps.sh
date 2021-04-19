@@ -122,6 +122,7 @@ if [ $DEVICE_TYPE = "gpu" ]; then
       ${PYTHON_EXE} -m pip install -r ${0/%install_deps.sh/training\/requirements.txt}
     else
       ${PYTHON_EXE} -m pip install -r ${0/%install_deps.sh/training\/ortmodule\/stage1\/requirements.txt}
+      ${PYTHON_EXE} -m pip install 'git+https://github.com/pytorch/vision.git@v0.9.1'
       # Due to a [bug on DeepSpeed](https://github.com/microsoft/DeepSpeed/issues/663), we install it separately through ortmodule/stage2/requirements.txt
       ${PYTHON_EXE} -m pip install -r ${0/%install_deps.sh/training\/ortmodule\/stage2\/requirements.txt}
     fi
