@@ -1851,7 +1851,6 @@ def main():
 
     # if using rocm, setup rocm paths
     rocm_home = setup_rocm_build(args, configs)
-    print('-- finish setup rocm build --')
 
     os.makedirs(build_dir, exist_ok=True)
 

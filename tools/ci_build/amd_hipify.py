@@ -213,7 +213,6 @@ HIPIFY_PERL = '/opt/rocm/bin/hipify-perl'
 
 def hipify(src_file_path, dst_file_path):
     log.debug('Hipifying: "{}" -> "{}"'.format(src_file_path, dst_file_path))
-    print('Hipifying: "{}" -> "{}"'.format(src_file_path, dst_file_path))
 
     dst_file_path = dst_file_path.replace('cuda', 'rocm')
     dir_name = os.path.dirname(dst_file_path)
@@ -298,11 +297,7 @@ def list_files(prefix, path):
 def amd_hipify(config_build_dir):
     cuda_contrib_path = os.path.join(contrib_ops_path, 'cuda')
     rocm_contrib_path = os.path.join(config_build_dir, 'amdgpu', contrib_ops_path, 'rocm')
-    print('cwd: ', os.getcwd())
-    print('cuda contrib path', cuda_contrib_path)
-    print('rocm contrib path', rocm_contrib_path)
     contrib_files = list_files(cuda_contrib_path, '')
-    print('contrib files', contrib_files)
     for file in contrib_files:
         if file not in contrib_ops_excluded_files:
             src_file_path = os.path.join(cuda_contrib_path, file)
@@ -311,10 +306,7 @@ def amd_hipify(config_build_dir):
 
     cuda_provider_path = os.path.join(providers_path, 'cuda')
     rocm_provider_path = os.path.join(config_build_dir, 'amdgpu', providers_path, 'rocm')
-    print('cuda provider path', cuda_provider_path)
-    print('rocm provider path', rocm_provider_path)
     provider_files = list_files(cuda_provider_path, '')
-    print('provider files', contrib_files)
     for file in provider_files:
         if file not in provider_excluded_files:
             src_file_path = os.path.join(cuda_provider_path, file)
@@ -323,10 +315,7 @@ def amd_hipify(config_build_dir):
 
     cuda_training_path = os.path.join(training_ops_path, 'cuda')
     rocm_training_path = os.path.join(config_build_dir, 'amdgpu', training_ops_path, 'rocm')
-    print('cuda training path', cuda_training_path)
-    print('rocm training path', rocm_training_path)
     training_files = list_files(cuda_training_path, '')
-    print('training files', contrib_files)
     for file in training_files:
         if file not in training_ops_excluded_files:
             src_file_path = os.path.join(cuda_training_path, file)
