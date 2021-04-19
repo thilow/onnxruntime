@@ -1164,6 +1164,9 @@ def run_android_tests(args, source_dir, config, cwd):
     def adb_shell(*args, **kwargs):
         return run_subprocess([sdk_tool_paths.adb, 'shell', *args], **kwargs)
 
+    def adb_install(src, dest, **kwargs):
+        return run_subprocess([sdk_tool_paths.adb, 'install', src, dest], **kwargs)
+
     def run_adb_shell(cmd):
         # GCOV_PREFIX_STRIP specifies the depth of the directory hierarchy to strip and
         # GCOV_PREFIX specifies the root directory
@@ -1200,6 +1203,9 @@ def run_android_tests(args, source_dir, config, cwd):
             adb_shell('chmod +x {}/onnxruntime_test_all'.format(device_dir))
             adb_push('onnx_test_runner', device_dir, cwd=cwd)
             adb_shell('chmod +x {}/onnx_test_runner'.format(device_dir))
+            adb_install(
+                os.path.join(source_dir, 'java', 'src', 'test', 'android', 'app', 'build', 'outputs', 'apk'),
+                device_dir, cwd=cwd)
             run_adb_shell('{0}/onnxruntime_test_all'.format(device_dir))
             if args.use_nnapi:
                 adb_shell('cd {0} && {0}/onnx_test_runner -e nnapi {0}/test'.format(device_dir))
