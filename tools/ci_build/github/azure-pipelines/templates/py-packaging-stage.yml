@@ -279,15 +279,19 @@ stages:
               -e BUILD_BUILDNUMBER \
               onnxruntimetrainingrocmbuild \
                 $(PythonManylinuxDir)/bin/python3 /onnxruntime_src/tools/ci_build/build.py \
-                  --build_dir /build \
                   --config Release \
-                  --skip_submodule_sync \
+                  --use_rocm \
+                    --rocm_version=4.1 \
+                    --rocm_home=/opt/rocm \
+                    --nccl_home=/opt/rocm \
+                  --update \
                   --parallel \
+                  --build_dir /build \
+                  --build \
                   --build_wheel \
                   --skip_tests \
                   ${{ parameters.build_py_parameters }} \
                   --cmake_extra_defines  PYTHON_INCLUDE_DIR=$(PythonManylinuxIncludeDir) PYTHON_LIBRARY=/usr/lib64/librt.so \
-                  --use_rocm --rocm_version=4.1 --rocm_home=/opt/rocm --nccl_home=/opt/rocm
           workingDirectory: $(Build.SourcesDirectory)
   
       - task: CopyFiles@2
