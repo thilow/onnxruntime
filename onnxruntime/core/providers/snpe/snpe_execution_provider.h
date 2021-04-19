@@ -9,17 +9,6 @@
 
 namespace onnxruntime {
 
-struct SnpeFuncState {
-  size_t output_size = 0;
-  std::unique_ptr<SnpeLib> snpe_rt = nullptr;
-  std::vector<std::string> input_names;
-  std::vector<std::string> output_names;
-};
-
-namespace contrib {
-Status RegisterSnpeContribKernels(KernelRegistry& kernel_registry);
-}  // namespace contrib
-
 class SNPEExecutionProvider : public IExecutionProvider {
  public:
   SNPEExecutionProvider(bool enforce_dsp);
@@ -34,9 +23,6 @@ class SNPEExecutionProvider : public IExecutionProvider {
 
  private:
   bool enforce_dsp_;
-  size_t output_size_;
   std::unique_ptr<SnpeLib> snpe_rt_;
-  std::vector<std::string> input_names_;
-  std::vector<std::string> output_names_;
 };
 }  // namespace onnxruntime
