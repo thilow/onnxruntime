@@ -5,7 +5,7 @@ pandas
 sklearn
 numpy==1.19.5
 transformers==v4.3.2
-torch==1.8.1
+torch
 torchtext==0.9.1
 tensorboard
 h5py
