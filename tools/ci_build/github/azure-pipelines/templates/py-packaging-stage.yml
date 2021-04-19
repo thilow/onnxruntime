@@ -274,12 +274,12 @@ stages:
               --volume $(Build.SourcesDirectory):/onnxruntime_src \
               --volume $(Build.BinariesDirectory):/build \
               --workdir /onnxruntime_src \
-              --entrypoint /bin/bash \
+              --entrypoint $(PythonManylinuxDir)/bin/python3 \
               -e NVIDIA_VISIBLE_DEVICES=all \
               -e NIGHTLY_BUILD \
               -e BUILD_BUILDNUMBER \
               onnxruntimetrainingrocmbuild \
-                $(PythonManylinuxDir)/bin/python3 /onnxruntime_src/tools/ci_build/build.py \
+                /onnxruntime_src/tools/ci_build/build.py \
                   --config Release \
                   --use_rocm \
                     --rocm_version=4.1 \
